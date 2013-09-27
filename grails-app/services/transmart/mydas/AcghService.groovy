@@ -22,7 +22,7 @@ import uk.ac.ebi.mydas.model.DasFeatureOrientation
 import uk.ac.ebi.mydas.model.DasPhase
 import uk.ac.ebi.mydas.model.DasType
 
-class DasService {
+class AcghService {
 
     static transactional = true
 
@@ -52,17 +52,33 @@ class DasService {
                                               Integer maxbins = null,
                                               uk.ac.ebi.mydas.model.Range range = null,
                                               Collection<DasType> dasTypes = acghDasTypes) throws UnimplementedFeatureException, DataSourceException {
+
+        // define query
         def query = getACGHRegionQuery(resultInstanceId, segmentIds, range)
+
+        // getting from the database
         RegionResult regionResult = dataQueryResourceNoGormService.runACGHRegionQuery(query, null)
+
+        // get assays
         def assays = regionResult.indicesList
+
+        // array for features per segment
         Map<String, List<DasFeature>> featuresPerSegment = [:]
+
         try {
             for (RegionRow row: regionResult.rows) {
+
                 def region = row.region
 
+                // initializing with empty col
                 if(!featuresPerSegment[region.chromosome]) featuresPerSegment[region.chromosome] = []
+
+                // count types for this row
                 def countPerDasType = countAcghDasTypesForRow(row, assays, dasTypes)
+
                 countPerDasType.each { typeCountEntry ->
+
+                    // calculate freq
                     def freq = typeCountEntry.value / (double) assays.size()
 
                     featuresPerSegment[region.chromosome] << new DasFeature(
@@ -98,17 +114,32 @@ class DasService {
                 }
             }
         }  finally {
+            // close transaction
             regionResult.close()
         }
 
+        // collect features per segments
         def segments = segmentIds.collect{ new DasAnnotatedSegment(it , range?.getFrom() ?: null , range?.getTo() ?: null , acghVersion, it, featuresPerSegment[it] ?: []) }
 
+        // reduce features per bin
+        // TODO: [rnugraha] Why it's here? Should it be one of the query limit??
         reduceBins(segments, maxbins)
     }
 
+    /**
+     * Get DAS entry points
+     * @param resultInstanceId
+     * @return
+     */
     List<DasEntryPoint> getAcghEntryPoints(Long resultInstanceId) {
+
+        // define query
         def query = getACGHRegionQuery(resultInstanceId)
+
+        // get chromosomal regions from defined result instance id
         List<ChromosomalSegment> regions = dataQueryResourceNoGormService.getChromosomalSegments(query)
+
+        // finally collect the regions
         regions.collect {
             new DasEntryPoint(
                     //segmentId
