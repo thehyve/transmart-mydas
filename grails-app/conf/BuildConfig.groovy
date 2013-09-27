@@ -14,18 +14,20 @@ grails.project.dependency.resolution = {
         grailsCentral()
         mavenLocal()
         mavenCentral()
-        mavenRepo "http://repo.thehyve.nl/content/groups/public/"
+        mavenRepo "https://repo.thehyve.nl/content/groups/public/"
         mavenRepo "http://mydas.googlecode.com/svn/repository/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-        compile 'uk.ac.ebi.mydas:mydas:1.7.0.hyve-SNAPSHOT'
+        compile ('uk.ac.ebi.mydas:mydas:1.7.0.hyve-SNAPSHOT') {
+            excludes 'lucene-core'
+        }
         compile 'net.sf.opencsv:opencsv:2.3'
         compile 'org.transmartproject:transmart-core-api:1.0-SNAPSHOT'
     }
 
     plugins {
-        build(":tomcat:$grailsVersion",
+        build(":tomcat:7.0.41",
               ":release:2.2.1",
               ":rest-client-builder:1.0.3") {
             export = false
