@@ -62,12 +62,12 @@ class AcghDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        return acghService.getAcghFeatures(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+       acghService.getAcghFeatures(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins, Range rows) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException, UnimplementedFeatureException {
-        return acghService.getAcghFeatures(resultInstanceId, [segmentId], maxbins, rows).first()
+        acghService.getAcghFeatures(resultInstanceId, [segmentId], maxbins, rows).first()
     }
 
     @Override
@@ -81,7 +81,7 @@ class AcghDS implements RangeHandlingAnnotationDataSource {
 
     //Optional
     @Override
-    URL getLinkURL(String s, String s1) throws UnimplementedFeatureException, DataSourceException { null }
+    URL getLinkURL(String field, String id) throws UnimplementedFeatureException, DataSourceException { null }
 
     @Override
     Collection<DasEntryPoint> getEntryPoints(Integer start, Integer stop) throws UnimplementedFeatureException, DataSourceException {
