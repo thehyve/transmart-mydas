@@ -44,29 +44,29 @@ class VCFDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        return vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException, UnimplementedFeatureException {
-        return vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, range).first()
+        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, range).first()
     }
 
 
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, DataSourceException, UnimplementedFeatureException {
-        vcfService.getAcghFeatures(resultInstanceId, [segmentId], maxbins, range).first()
+        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, range).first()
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws UnimplementedFeatureException, DataSourceException {
-        vcfService.getAcghFeatures(resultInstanceId, segmentIds, maxbins, range)
+        vcfService.getVCFFeatures(resultInstanceId, segmentIds, maxbins, range)
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins) throws UnimplementedFeatureException, DataSourceException {
-        vcfService.getAcghFeatures(resultInstanceId, segmentIds, maxbins)
+        vcfService.getVCFFeatures(resultInstanceId, segmentIds, maxbins)
     }
 
     @Override
@@ -82,7 +82,7 @@ class VCFDS implements RangeHandlingAnnotationDataSource {
     }
 
     @Override
-    URL getLinkURL(String s, String s2) throws UnimplementedFeatureException, DataSourceException {
+    URL getLinkURL(String field, String id) throws UnimplementedFeatureException, DataSourceException {
         // TODO
         return null
     }
