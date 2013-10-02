@@ -116,7 +116,7 @@ class VcfService {
 
     }
 
-    List<DasAnnotatedSegment> getQualityDepth(Collection<String> segmentIds = [],
+    List<DasAnnotatedSegment> getQualityByDepth(Collection<String> segmentIds = [],
                                             Integer maxbins = null,
                                             Range range = null) {
 
@@ -127,31 +127,31 @@ class VcfService {
         // -----------------------------------------------
 
         def dummyFeatures = [
-                new DasFeature("quality-depth-1","quality-depth-1",new DasType("smaf", "", "", ""),vcfMethod,30188040,30188040,24,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-2","quality-depth-2",new DasType("smaf", "", "", ""),vcfMethod,30189100,30189100,15,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-3","quality-depth-3",new DasType("smaf", "", "", ""),vcfMethod,30189120,30189120,23,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-4","quality-depth-4",new DasType("smaf", "", "", ""),vcfMethod,30189150,30189150,35,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-5","quality-depth-5",new DasType("smaf", "", "", ""),vcfMethod,30189188,30189188,22,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-6","quality-depth-6",new DasType("smaf", "", "", ""),vcfMethod,30189112,30189112,11,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-7","quality-depth-7",new DasType("smaf", "", "", ""),vcfMethod,30189134,30189134,56,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-8","quality-depth-8",new DasType("smaf", "", "", ""),vcfMethod,30189114,30189114,34,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-9","quality-depth-9",new DasType("smaf", "", "", ""),vcfMethod,30189199,30189199,12,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-10","quality-depth-10",new DasType("smaf", "", "", ""),vcfMethod,30189145,30189145,72,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-11","quality-depth-11",new DasType("smaf", "", "", ""),vcfMethod,30189142,30189142,13,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-12","quality-depth-12",new DasType("smaf", "", "", ""),vcfMethod,30189176,30189176,35,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-13","quality-depth-13",new DasType("smaf", "", "", ""),vcfMethod,30189182,30189182,44,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-14","quality-depth-14",new DasType("smaf", "", "", ""),vcfMethod,30189200,30189200,21,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-15","quality-depth-15",new DasType("smaf", "", "", ""),vcfMethod,30189243,30189243,76,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-16","quality-depth-16",new DasType("smaf", "", "", ""),vcfMethod,30189287,30189287,35,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-17","quality-depth-17",new DasType("smaf", "", "", ""),vcfMethod,30189278,30189278,64,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-18","quality-depth-18",new DasType("smaf", "", "", ""),vcfMethod,30189213,30189213,65,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-19","quality-depth-19",new DasType("smaf", "", "", ""),vcfMethod,30189254,30189254,32,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-20","quality-depth-20",new DasType("smaf", "", "", ""),vcfMethod,30189253,30189253,23,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-21","quality-depth-21",new DasType("smaf", "", "", ""),vcfMethod,30189224,30189224,55,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-22","quality-depth-22",new DasType("smaf", "", "", ""),vcfMethod,30189210,30189210,53,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-23","quality-depth-23",new DasType("smaf", "", "", ""),vcfMethod,30189299,30189299,34,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-24","quality-depth-24",new DasType("smaf", "", "", ""),vcfMethod,30189265,30189265,56,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("quality-depth-25","quality-depth-25",new DasType("smaf", "", "", ""),vcfMethod,30189262,30189262,87,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-1","quality-depth-1",new DasType("qd", "", "", ""),vcfMethod,30188040,30188040,24,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-2","quality-depth-2",new DasType("qd", "", "", ""),vcfMethod,30189100,30189100,15,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-3","quality-depth-3",new DasType("qd", "", "", ""),vcfMethod,30189120,30189120,23,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-4","quality-depth-4",new DasType("qd", "", "", ""),vcfMethod,30189150,30189150,35,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-5","quality-depth-5",new DasType("qd", "", "", ""),vcfMethod,30189188,30189188,22,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-6","quality-depth-6",new DasType("qd", "", "", ""),vcfMethod,30189112,30189112,11,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-7","quality-depth-7",new DasType("qd", "", "", ""),vcfMethod,30189134,30189134,56,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-8","quality-depth-8",new DasType("qd", "", "", ""),vcfMethod,30189114,30189114,34,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-9","quality-depth-9",new DasType("qd", "", "", ""),vcfMethod,30189199,30189199,12,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-10","quality-depth-10",new DasType("qd", "", "", ""),vcfMethod,30189145,30189145,72,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-11","quality-depth-11",new DasType("qd", "", "", ""),vcfMethod,30189142,30189142,13,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-12","quality-depth-12",new DasType("qd", "", "", ""),vcfMethod,30189176,30189176,35,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-13","quality-depth-13",new DasType("qd", "", "", ""),vcfMethod,30189182,30189182,44,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-14","quality-depth-14",new DasType("qd", "", "", ""),vcfMethod,30189200,30189200,21,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-15","quality-depth-15",new DasType("qd", "", "", ""),vcfMethod,30189243,30189243,76,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-16","quality-depth-16",new DasType("qd", "", "", ""),vcfMethod,30189287,30189287,35,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-17","quality-depth-17",new DasType("qd", "", "", ""),vcfMethod,30189278,30189278,64,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-18","quality-depth-18",new DasType("qd", "", "", ""),vcfMethod,30189213,30189213,65,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-19","quality-depth-19",new DasType("qd", "", "", ""),vcfMethod,30189254,30189254,32,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-20","quality-depth-20",new DasType("qd", "", "", ""),vcfMethod,30189253,30189253,23,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-21","quality-depth-21",new DasType("qd", "", "", ""),vcfMethod,30189224,30189224,55,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-22","quality-depth-22",new DasType("qd", "", "", ""),vcfMethod,30189210,30189210,53,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-23","quality-depth-23",new DasType("qd", "", "", ""),vcfMethod,30189299,30189299,34,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-24","quality-depth-24",new DasType("qd", "", "", ""),vcfMethod,30189265,30189265,56,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature("quality-depth-25","quality-depth-25",new DasType("qd", "", "", ""),vcfMethod,30189262,30189262,87,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
 
         ]
 
