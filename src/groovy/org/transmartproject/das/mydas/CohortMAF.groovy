@@ -18,7 +18,7 @@ import javax.servlet.ServletContext
 /**
  * Created by rnugraha on 26-09-13.
  */
-class VCFDS implements RangeHandlingAnnotationDataSource {
+class CohortMAF implements RangeHandlingAnnotationDataSource {
 
     VcfService vcfService
     Long resultInstanceId
@@ -39,34 +39,34 @@ class VCFDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins) throws BadReferenceObjectException, DataSourceException {
-        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins).first()
+        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException, UnimplementedFeatureException {
-        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, range).first()
+        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins, range).first()
     }
 
 
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, DataSourceException, UnimplementedFeatureException {
-        vcfService.getVCFFeatures(resultInstanceId, [segmentId], maxbins, range).first()
+        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins, range).first()
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws UnimplementedFeatureException, DataSourceException {
-        vcfService.getVCFFeatures(resultInstanceId, segmentIds, maxbins, range)
+        vcfService.getCohortMAF(resultInstanceId, segmentIds, maxbins, range)
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins) throws UnimplementedFeatureException, DataSourceException {
-        vcfService.getVCFFeatures(resultInstanceId, segmentIds, maxbins)
+        vcfService.getCohortMAF(resultInstanceId, segmentIds, maxbins)
     }
 
     @Override
