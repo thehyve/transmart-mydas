@@ -18,7 +18,7 @@ import javax.servlet.ServletContext
 /**
  * Created by rnugraha on 26-09-13.
  */
-class CohortMAF implements RangeHandlingAnnotationDataSource {
+class CohortMAFDS implements RangeHandlingAnnotationDataSource {
 
     VcfService vcfService
     Long resultInstanceId

@@ -156,7 +156,7 @@
             <maintainer email="office@thehyve.nl" />
             <pattern>vcf-(\d+)</pattern>
             <version uri="vcf" created="2013-09-27">
-                <class>org.transmartproject.das.mydas.CohortMAF</class>
+                <class>org.transmartproject.das.mydas.CohortMAFDS</class>
                 <!--TODO: Specify appropriate coordinates-->
                 <coordinates 	uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS94"
                                 source="Gene_ID"
