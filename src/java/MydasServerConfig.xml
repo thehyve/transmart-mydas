@@ -243,7 +243,7 @@
 
             <maintainer email="office@thehyve.nl" />
             <version uri="gv" created="2013-10-02">
-                <class>org.transmartproject.das.mydas.QualityByDepthDS</class>
+                <class>org.transmartproject.das.mydas.GenomicVariantsDS</class>
                 <!--TODO: Specify appropriate coordinates-->
                 <coordinates 	uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS94"
                                 source="Gene_ID"
