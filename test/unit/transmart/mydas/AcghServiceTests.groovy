@@ -12,7 +12,6 @@ import org.transmartproject.core.dataquery.acgh.RegionResult
 import org.transmartproject.core.dataquery.acgh.RegionRow
 import org.transmartproject.core.dataquery.assay.Assay
 import org.transmartproject.core.dataquery.constraints.ACGHRegionQuery
-import org.transmartproject.core.dataquery.rnaseq.RegionRNASeqResult
 import org.transmartproject.core.querytool.QueriesResource
 
 
@@ -68,10 +67,6 @@ class AcghServiceTests {
 
             }
 
-            @Override
-            RegionRNASeqResult runRNASEQRegionQuery(ACGHRegionQuery acghRegionQuery, Object o) {
-                return null
-            }
 
             List<ChromosomalSegment> getChromosomalSegments(ACGHRegionQuery acghRegionQuery) {
                 [
