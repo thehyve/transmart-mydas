@@ -88,14 +88,18 @@ class VcfService {
 
         // sample of URL
         def myurls = [:]
-        myurls.put(new URL('http://www.thehyve.nl'), 'just dummy URL')
+
+        // Reference link to NCBI website
+        // Only displayed when rs id value is not empty
+        // Format : "http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=" + rs_id
+        myurls.put(new URL('http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=rs2048230'), 'NCBI SNP Ref')
 
         def dummyFeatures = [
                 new DasFeature(
                         // feature id - any unique id that represent this feature
                         "summary-maf-1",
-                        // feature label - here we're gonna put the refSNP ID
-                        "rs6054257",
+                        // feature label
+                        "Minor Allel Frequency",
                         // das type
                         new DasType("smaf", "", "", ""),
                         // das method TODO: pls find out what is actually means
@@ -107,11 +111,13 @@ class VcfService {
                         // value - this is where Minor Allele Freq (MAF) value is placed
                         0.7,
                         // feature orientation  TODO: pls find out what is actually means
-                        DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,
+                        // lets put  DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE by default
+                        DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
                         // phase TODO: pls find out what is actually means
+                        // lets put DasPhase.PHASE_NOT_APPLICABLE by default
                         DasPhase.PHASE_NOT_APPLICABLE,
                         //notes
-                        ['REF=A', 'ALT=G,T', 'AlleleCount=1,6','AlleleFrequency=0.1,0.6','TotalAllele=438','BaseQRankSum=-9.563','MQRankSum=2.462', 'dbSNPMembership=Yes'],
+                        ['RefSNP=rs2048230', 'REF=A', 'ALT=G,T', 'AlleleCount=1,6','AlleleFrequency=0.1,0.6','TotalAllele=438','BaseQRankSum=-9.563','MQRankSum=2.462', 'dbSNPMembership=Yes'],
                         //links
                         myurls,
                         //targets
