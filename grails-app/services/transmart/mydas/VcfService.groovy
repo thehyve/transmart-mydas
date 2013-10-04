@@ -78,14 +78,50 @@ class VcfService {
                                             Integer maxbins = null,
                                             Range range = null) {
 
+
+
         // TODO to retrieve from backend
 
         // -----------------------------------------------
         // code below is only intended to serve dummy data
         // -----------------------------------------------
 
+        // sample of URL
+        def myurls = [:]
+        myurls.put(new URL('http://www.thehyve.nl'), 'just dummy URL')
+
         def dummyFeatures = [
-                new DasFeature("summary-maf-1","summary-maf-1",new DasType("smaf", "", "", ""),vcfMethod,30188040,30188040,0.7,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
+                new DasFeature(
+                        // feature id - any unique id that represent this feature
+                        "summary-maf-1",
+                        // feature label - here we're gonna put the refSNP ID
+                        "rs6054257",
+                        // das type
+                        new DasType("smaf", "", "", ""),
+                        // das method TODO: pls find out what is actually means
+                        vcfMethod,
+                        // start pos
+                        30188040,
+                        // end pos
+                        30188040,
+                        // value - this is where Minor Allele Freq (MAF) value is placed
+                        0.7,
+                        // feature orientation  TODO: pls find out what is actually means
+                        DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,
+                        // phase TODO: pls find out what is actually means
+                        DasPhase.PHASE_NOT_APPLICABLE,
+                        //notes
+                        ['REF=A', 'ALT=G,T', 'AlleleCount=1,6','AlleleFrequency=0.1,0.6','TotalAllele=438','BaseQRankSum=-9.563','MQRankSum=2.462', 'dbSNPMembership=Yes'],
+                        //links
+                        myurls,
+                        //targets
+                        [],
+                        //parents
+                        [],
+                        //parts
+                        []
+                ),
+
                 new DasFeature("summary-maf-2","summary-maf-2",new DasType("smaf", "", "", ""),vcfMethod,30189100,30189100,0.6,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
                 new DasFeature("summary-maf-3","summary-maf-3",new DasType("smaf", "", "", ""),vcfMethod,30189120,30189120,0.1,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
                 new DasFeature("summary-maf-4","summary-maf-4",new DasType("smaf", "", "", ""),vcfMethod,30189150,30189150,0.7,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
