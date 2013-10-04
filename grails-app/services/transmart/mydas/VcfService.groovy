@@ -17,7 +17,10 @@ import uk.ac.ebi.mydas.model.Range
 class VcfService {
 
     //TODO Choose correct cvId(3-d parameter) from http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=SO
-    private def vcfMethod = new DasMethodE('vcf', 'vcf label', 'vcf-cv-id')
+    private def vcfMethod = new DasMethodE('vcf', 'vcf', 'vcf-cv-id')
+    String vcfVersion = '0.1'
+
+    def vcfDataService
 
     /**
      * Retrieve features
@@ -74,88 +77,85 @@ class VcfService {
      * @param range
      * @return
      */
-    List<DasAnnotatedSegment> getSummaryMAF(Collection<String> segmentIds = [],
+    List<DasAnnotatedSegment> getSummaryMAF(long resultInstanceId, Collection<String> segmentIds = [],
                                             Integer maxbins = null,
                                             Range range = null) {
 
+        def deVariantSubjectDetails = vcfDataService.retrieveVariantDetail(resultInstanceId, segmentIds, range?.from, range?.to)
 
+        Map<String, List<DasFeature>> featuresPerSegment = [:]
 
-        // TODO to retrieve from backend
+        deVariantSubjectDetails.each {
+            if (!featuresPerSegment[it.chromosome]) {
+                featuresPerSegment[it.chromosome] = []
+            }
 
-        // -----------------------------------------------
-        // code below is only intended to serve dummy data
-        // -----------------------------------------------
+            def info = parseVcfInfo(it.info)
+            Double score = selectAlleleFrequency(info['AF'])
 
-        // sample of URL
-        def myurls = [:]
+            if(score > 0)
+                featuresPerSegment[it.chromosome] << new DasFeature(
+                    // feature id - any unique id that represent this feature
+                    "summary-maf-${it.id}",
+                    // feature label
+                    "Minor Allel Frequency",
+                    // das type
+                    new DasType("smaf", "", "", ""),
+                    // das method TODO: pls find out what is actually means
+                    vcfMethod,
+                    // start pos
+                    it.position.toInteger(),
+                    // end pos
+                    it.position.toInteger(),
+                    // value - this is where Minor Allele Freq (MAF) value is placed
+                    score,
+                    // feature orientation  TODO: pls find out what is actually means
+                    // lets put  DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE by default
+                    DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
+                    // phase TODO: pls find out what is actually means
+                    // lets put DasPhase.PHASE_NOT_APPLICABLE by default
+                    DasPhase.PHASE_NOT_APPLICABLE,
+                    //notes
+                    ["RefSNP=${it.rsID}",
+                     "REF=${it.ref}",
+                     "ALT=${it.alt}",
+                     //TODO What names in vcf file
+                     //"AlleleCount=",
+                     "AlleleFrequency=${info['AF']?.join(',') ?: ''}",
+                     //TODO What names in vcf file
+                     //"TotalAllele=438",
+                     //"BaseQRankSum=-9.563",
+                     //"MQRankSum=2.462",
+                     "dbSNPMembership=${info['DB'] ? 'Yes' : 'No'}"]*.toString(),
+                    //links
+                    [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${it.rsID}")): 'NCBI SNP Ref'],
+                    //targets
+                    [],
+                    //parents
+                    [],
+                    //parts
+                    []
+            )
+        }
 
-        // Reference link to NCBI website
-        // Only displayed when rs id value is not empty
-        // Format : "http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=" + rs_id
-        myurls.put(new URL('http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=rs2048230'), 'NCBI SNP Ref')
+        segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
+    }
 
-        def dummyFeatures = [
-                new DasFeature(
-                        // feature id - any unique id that represent this feature
-                        "summary-maf-1",
-                        // feature label
-                        "Minor Allel Frequency",
-                        // das type
-                        new DasType("smaf", "", "", ""),
-                        // das method TODO: pls find out what is actually means
-                        vcfMethod,
-                        // start pos
-                        30188040,
-                        // end pos
-                        30188040,
-                        // value - this is where Minor Allele Freq (MAF) value is placed
-                        0.7,
-                        // feature orientation  TODO: pls find out what is actually means
-                        // lets put  DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE by default
-                        DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
-                        // phase TODO: pls find out what is actually means
-                        // lets put DasPhase.PHASE_NOT_APPLICABLE by default
-                        DasPhase.PHASE_NOT_APPLICABLE,
-                        //notes
-                        ['RefSNP=rs2048230', 'REF=A', 'ALT=G,T', 'AlleleCount=1,6','AlleleFrequency=0.1,0.6','TotalAllele=438','BaseQRankSum=-9.563','MQRankSum=2.462', 'dbSNPMembership=Yes'],
-                        //links
-                        myurls,
-                        //targets
-                        [],
-                        //parents
-                        [],
-                        //parts
-                        []
-                ),
+    private Double selectAlleleFrequency(freqStrs) {
+        if(freqStrs) {
+            def freq = freqStrs.collect { it.isNumber() ? Double.valueOf(it) : -1D }
+            freq.sort{ -it }
+            freq[0]
+        } else -1D
+    }
 
-                new DasFeature("summary-maf-2","summary-maf-2",new DasType("smaf", "", "", ""),vcfMethod,30189100,30189100,0.6,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-3","summary-maf-3",new DasType("smaf", "", "", ""),vcfMethod,30189120,30189120,0.1,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-4","summary-maf-4",new DasType("smaf", "", "", ""),vcfMethod,30189150,30189150,0.7,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-5","summary-maf-5",new DasType("smaf", "", "", ""),vcfMethod,30189188,30189188,0.2,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-6","summary-maf-6",new DasType("smaf", "", "", ""),vcfMethod,30189112,30189112,0.3,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-7","summary-maf-7",new DasType("smaf", "", "", ""),vcfMethod,30189134,30189134,0.24,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-8","summary-maf-8",new DasType("smaf", "", "", ""),vcfMethod,30189114,30189114,0.7,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-9","summary-maf-9",new DasType("smaf", "", "", ""),vcfMethod,30189199,30189199,0.4,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-10","summary-maf-10",new DasType("smaf", "", "", ""),vcfMethod,30189145,30189145,0.2,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-11","summary-maf-11",new DasType("smaf", "", "", ""),vcfMethod,30189142,30189142,0.3,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-12","summary-maf-12",new DasType("smaf", "", "", ""),vcfMethod,30189176,30189176,0.2,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-13","summary-maf-13",new DasType("smaf", "", "", ""),vcfMethod,30189182,30189182,0.3,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-14","summary-maf-14",new DasType("smaf", "", "", ""),vcfMethod,30189200,30189200,0.6,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-15","summary-maf-15",new DasType("smaf", "", "", ""),vcfMethod,30189243,30189243,0.9,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-16","summary-maf-16",new DasType("smaf", "", "", ""),vcfMethod,30189287,30189287,0.2,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-17","summary-maf-17",new DasType("smaf", "", "", ""),vcfMethod,30189278,30189278,0.2,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-18","summary-maf-18",new DasType("smaf", "", "", ""),vcfMethod,30189213,30189213,0.1,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-19","summary-maf-19",new DasType("smaf", "", "", ""),vcfMethod,30189254,30189254,0.7,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-20","summary-maf-20",new DasType("smaf", "", "", ""),vcfMethod,30189253,30189253,0.2,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-21","summary-maf-21",new DasType("smaf", "", "", ""),vcfMethod,30189224,30189224,0.5,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-22","summary-maf-22",new DasType("smaf", "", "", ""),vcfMethod,30189210,30189210,0.5,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-23","summary-maf-23",new DasType("smaf", "", "", ""),vcfMethod,30189299,30189299,0.3,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-24","summary-maf-24",new DasType("smaf", "", "", ""),vcfMethod,30189265,30189265,0.9,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-                new DasFeature("summary-maf-25","summary-maf-25",new DasType("smaf", "", "", ""),vcfMethod,30189262,30189262,0.8,DasFeatureOrientation.ORIENTATION_ANTISENSE_STRAND,DasPhase.PHASE_NOT_APPLICABLE,[],[:],[],[],[]),
-
-        ]
-
-        [new DasAnnotatedSegment('22' , 30109479 , 30352561 , 'dummy.version', 'label for segment 22', dummyFeatures)]
+    private Map parseVcfInfo(String info) {
+        if(info) {
+            info.split(';').collectEntries {
+                def keyValus = it.split('=')
+                [(keyValus[0]) : keyValus.length > 1 ? keyValus[1].split(',') : keyValus[0]]
+            }
+        } else [:]
 
     }
 

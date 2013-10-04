@@ -22,11 +22,13 @@ class SummaryMAFDS implements RangeHandlingAnnotationDataSource {
 
     VcfService vcfService
     List<DasEntryPoint> entryPoints
+    long resultInstanceId
 
     @Override
     void init(ServletContext servletContext, Map<String, PropertyType> stringPropertyTypeMap, DataSourceConfiguration dataSourceConfiguration) throws DataSourceException {
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         this.vcfService = ctx.vcfService
+        resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong();
     }
 
     @Override
@@ -36,7 +38,7 @@ class SummaryMAFDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        return vcfService.getSummaryMAF([segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        return vcfService.getSummaryMAF(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
@@ -46,22 +48,22 @@ class SummaryMAFDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins) throws BadReferenceObjectException, DataSourceException {
-        return vcfService.getSummaryMAF([segmentId], maxbins).first()
+        return vcfService.getSummaryMAF(resultInstanceId, [segmentId], maxbins).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, DataSourceException, UnimplementedFeatureException {
-        return vcfService.getSummaryMAF([segmentId], maxbins, range).first()
+        return vcfService.getSummaryMAF(resultInstanceId, [segmentId], maxbins, range).first()
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins) throws UnimplementedFeatureException, DataSourceException {
-        return vcfService.getSummaryMAF(segmentIds, maxbins)
+        return vcfService.getSummaryMAF(resultInstanceId, segmentIds, maxbins)
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws UnimplementedFeatureException, DataSourceException {
-        return vcfService.getSummaryMAF(segmentIds, maxbins, range)
+        return vcfService.getSummaryMAF(resultInstanceId, segmentIds, maxbins, range)
     }
 
 

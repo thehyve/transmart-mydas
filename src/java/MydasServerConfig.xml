@@ -184,6 +184,7 @@
                     mapmaster="http://www.transmartproject.org/">
 
             <maintainer email="office@thehyve.nl" />
+            <pattern>smaf-(\d+)</pattern>
             <version uri="smaf" created="2013-09-30">
                 <class>org.transmartproject.das.mydas.SummaryMAFDS</class>
                 <!--TODO: Specify appropriate coordinates-->
