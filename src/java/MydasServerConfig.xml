@@ -214,6 +214,7 @@
                     mapmaster="http://www.transmartproject.org/">
 
             <maintainer email="office@thehyve.nl" />
+            <pattern>qd-(\d+)</pattern>
             <version uri="qd" created="2013-10-02">
                 <class>org.transmartproject.das.mydas.QualityByDepthDS</class>
                 <!--TODO: Specify appropriate coordinates-->

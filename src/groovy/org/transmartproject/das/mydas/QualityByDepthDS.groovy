@@ -27,6 +27,7 @@ class QualityByDepthDS implements RangeHandlingAnnotationDataSource {
     void init(ServletContext servletContext, Map<String, PropertyType> stringPropertyTypeMap, DataSourceConfiguration dataSourceConfiguration) throws DataSourceException {
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         this.vcfService = ctx.vcfService
+        resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong();
     }
 
     @Override
@@ -36,7 +37,7 @@ class QualityByDepthDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        return vcfService.getQualityByDepth([segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        return vcfService.getQualityByDepth(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
@@ -47,22 +48,22 @@ class QualityByDepthDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins) throws BadReferenceObjectException, DataSourceException {
-        return vcfService.getQualityByDepth([segmentId], maxbins).first()
+        return vcfService.getQualityByDepth(resultInstanceId, [segmentId], maxbins).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, DataSourceException, UnimplementedFeatureException {
-        return vcfService.getQualityByDepth([segmentId], maxbins, range).first()
+        return vcfService.getQualityByDepth(resultInstanceId, [segmentId], maxbins, range).first()
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins) throws UnimplementedFeatureException, DataSourceException {
-        return vcfService.getQualityByDepth(segmentIds, maxbins)
+        return vcfService.getQualityByDepth(resultInstanceId, segmentIds, maxbins)
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws UnimplementedFeatureException, DataSourceException {
-        return vcfService.getQualityByDepth(segmentIds, maxbins, range)
+        return vcfService.getQualityByDepth(resultInstanceId, segmentIds, maxbins, range)
     }
 
     @Override
