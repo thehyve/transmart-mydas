@@ -11,7 +11,7 @@ abstract class AbstractTransmartDasService {
     QueriesResource queriesResourceService
     ConceptsResource conceptsResourceService
 
-    private HighDimensionalQuery createHighDimensionalQuery(Long resultInstanceId, String conceptKey = null, Collection<String> segmentIds = [], uk.ac.ebi.mydas.model.Range range = null) {
+    protected HighDimensionalQuery createHighDimensionalQuery(Long resultInstanceId, String conceptKey = null, Collection<String> segmentIds = [], uk.ac.ebi.mydas.model.Range range = null) {
         def segments = segmentIds.collect {
             def chromosomeSegment = new ChromosomalSegment(chromosome: it)
             if (range) {

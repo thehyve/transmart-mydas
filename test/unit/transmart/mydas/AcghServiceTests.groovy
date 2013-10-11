@@ -12,7 +12,9 @@ import org.transmartproject.core.dataquery.acgh.RegionResult
 import org.transmartproject.core.dataquery.acgh.RegionRow
 import org.transmartproject.core.dataquery.assay.Assay
 import org.transmartproject.core.dataquery.constraints.ACGHRegionQuery
+import org.transmartproject.core.dataquery.constraints.HighDimensionalQuery
 import org.transmartproject.core.querytool.QueriesResource
+import org.transmartproject.core.dataquery.vcf.VcfValues
 
 
 /**
@@ -68,18 +70,22 @@ class AcghServiceTests {
             }
 
 
-            List<ChromosomalSegment> getChromosomalSegments(ACGHRegionQuery acghRegionQuery) {
+            List<ChromosomalSegment> getChromosomalSegments(HighDimensionalQuery acghRegionQuery) {
                 [
                         new ChromosomalSegment(chromosome: '1', start: 100, end: 400),
                         new ChromosomalSegment(chromosome: '2', start: 200, end: 500)
                 ]
             }
+
+            List<VcfValues> getCohortMaf(HighDimensionalQuery spec) { [] }
+
+            List<VcfValues> getSummaryMaf(HighDimensionalQuery spec) { [] }
         }
     }
 
     @Test
     void testGetAcghFeatures() {
-        def segments = service.getAcghFeatures(10, ['2'], null, null)
+        def segments = service.getAcghFeatures(10, null, ['2'], null, null)
         assertNotNull segments
         assertEquals 1, segments.size()
         assertEquals '2', segments[0].getSegmentId()
@@ -89,7 +95,7 @@ class AcghServiceTests {
 
     @Test
     void testGetAcghFeaturesForLoss() {
-        def segments = service.getAcghFeatures(10, ['2'], null, null, [service.copyNumberStateToDasTypeMapping[CopyNumberState.LOSS]])
+        def segments = service.getAcghFeatures(10, null, ['2'], null, null, [service.copyNumberStateToDasTypeMapping[CopyNumberState.LOSS]])
         assertNotNull segments
         assertEquals 1, segments.size()
         assertEquals '2', segments[0].getSegmentId()

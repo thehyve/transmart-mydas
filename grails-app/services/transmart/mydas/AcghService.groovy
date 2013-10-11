@@ -8,6 +8,7 @@ import org.transmartproject.core.dataquery.acgh.RegionRow
 import org.transmartproject.core.dataquery.acgh.Region
 import org.transmartproject.core.dataquery.assay.Assay
 import org.transmartproject.core.dataquery.constraints.ACGHRegionQuery
+import org.transmartproject.core.dataquery.constraints.HighDimensionalQuery
 import org.transmartproject.core.dataquery.constraints.CommonHighDimensionalQueryConstraints
 import org.transmartproject.core.querytool.QueriesResource
 import uk.ac.ebi.mydas.exceptions.DataSourceException
@@ -54,7 +55,7 @@ class AcghService extends AbstractTransmartDasService {
                                               Collection<DasType> dasTypes = acghDasTypes) throws UnimplementedFeatureException, DataSourceException {
 
         // define query
-        def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
+        def query = createAcghQuery(resultInstanceId, conceptKey, segmentIds, range)
 
         // getting from the database
         RegionResult regionResult = dataQueryResourceNoGormService.runACGHRegionQuery(query, null)
@@ -134,7 +135,7 @@ class AcghService extends AbstractTransmartDasService {
     List<DasEntryPoint> getAcghEntryPoints(Long resultInstanceId) {
 
         // define query
-        def query = createHighDimensionalQuery(resultInstanceId)
+        def query = createAcghQuery(resultInstanceId)
 
         // get chromosomal regions from defined result instance id
         List<ChromosomalSegment> regions = dataQueryResourceNoGormService.getChromosomalSegments(query)
@@ -191,6 +192,25 @@ class AcghService extends AbstractTransmartDasService {
             //TODO Reduce to maxbins
             segments
         } else segments
+    }
+
+    protected ACGHRegionQuery createAcghQuery(Long resultInstanceId, String conceptKey = null, Collection<String> segmentIds = [], uk.ac.ebi.mydas.model.Range range = null) {
+        def segments = segmentIds.collect {
+            def chromosomeSegment = new ChromosomalSegment(chromosome: it)
+            if (range) {
+                chromosomeSegment.start = range.from
+                chromosomeSegment.end = range.to
+            }
+            chromosomeSegment
+        }
+
+        new ACGHRegionQuery(
+                common: new CommonHighDimensionalQueryConstraints(
+                        patientQueryResult: queriesResourceService.getQueryResultFromId(resultInstanceId)
+                ),
+                segments: segments,
+                term: conceptKey ? conceptsResourceService.getByKey(conceptKey) : null
+        )
     }
 
 }
