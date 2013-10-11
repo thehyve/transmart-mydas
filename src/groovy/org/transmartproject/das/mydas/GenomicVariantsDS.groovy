@@ -22,11 +22,14 @@ class GenomicVariantsDS implements RangeHandlingAnnotationDataSource {
 
     VcfService vcfService
     Long resultInstanceId
+    String conceptKey
 
     @Override
     void init(ServletContext servletContext, Map<String, PropertyType> stringPropertyTypeMap, DataSourceConfiguration dataSourceConfiguration) throws DataSourceException {
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         this.vcfService = ctx.vcfService
+        resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong()
+        conceptKey = dataSourceConfiguration.getMatcherAgainstDsn().group(2)
     }
 
     @Override
@@ -36,32 +39,32 @@ class GenomicVariantsDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        return vcfService.getGenomicVariants([segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        return vcfService.getGenomicVariants(resultInstanceId, conceptKey, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException, UnimplementedFeatureException {
-        return vcfService.getGenomicVariants(resultInstanceId, [segmentId], maxbins, range).first()
+        return vcfService.getGenomicVariants(resultInstanceId, conceptKey, [segmentId], maxbins, range).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins) throws BadReferenceObjectException, DataSourceException {
-        return vcfService.getGenomicVariants([segmentId], maxbins).first()
+        return vcfService.getGenomicVariants(resultInstanceId, conceptKey, [segmentId], maxbins).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, DataSourceException, UnimplementedFeatureException {
-        return vcfService.getGenomicVariants([segmentId], maxbins, range).first()
+        return vcfService.getGenomicVariants(resultInstanceId, conceptKey, [segmentId], maxbins, range).first()
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins) throws UnimplementedFeatureException, DataSourceException {
-        return vcfService.getGenomicVariants(segmentIds, maxbins)
+        return vcfService.getGenomicVariants(resultInstanceId, conceptKey, segmentIds, maxbins)
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws UnimplementedFeatureException, DataSourceException {
-        return vcfService.getGenomicVariants(segmentIds, maxbins, range)
+        return vcfService.getGenomicVariants(resultInstanceId, conceptKey, segmentIds, maxbins, range)
     }
 
     @Override

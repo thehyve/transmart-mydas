@@ -22,12 +22,14 @@ class CohortMAFDS implements RangeHandlingAnnotationDataSource {
 
     VcfService vcfService
     Long resultInstanceId
+    String conceptKey
 
     List<DasEntryPoint> entryPoints
 
     @Override
     void init(ServletContext servletContext, Map<String, PropertyType> stringPropertyTypeMap, DataSourceConfiguration dataSourceConfiguration) throws DataSourceException {
-        resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong();
+        resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong()
+        conceptKey = dataSourceConfiguration.getMatcherAgainstDsn().group(2);
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         this.vcfService = ctx.vcfService
     }
@@ -39,34 +41,34 @@ class CohortMAFDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins) throws BadReferenceObjectException, DataSourceException {
-        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins).first()
+        vcfService.getCohortMAF(resultInstanceId, conceptKey, [segmentId], maxbins).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        vcfService.getCohortMAF(resultInstanceId, conceptKey, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException, UnimplementedFeatureException {
-        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins, range).first()
+        vcfService.getCohortMAF(resultInstanceId, conceptKey, [segmentId], maxbins, range).first()
     }
 
 
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws BadReferenceObjectException, DataSourceException, UnimplementedFeatureException {
-        vcfService.getCohortMAF(resultInstanceId, [segmentId], maxbins, range).first()
+        vcfService.getCohortMAF(resultInstanceId, conceptKey, [segmentId], maxbins, range).first()
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins, uk.ac.ebi.mydas.model.Range range) throws UnimplementedFeatureException, DataSourceException {
-        vcfService.getCohortMAF(resultInstanceId, segmentIds, maxbins, range)
+        vcfService.getCohortMAF(resultInstanceId, conceptKey, segmentIds, maxbins, range)
     }
 
     @Override
     Collection<DasAnnotatedSegment> getFeatures(Collection<String> segmentIds, Integer maxbins) throws UnimplementedFeatureException, DataSourceException {
-        vcfService.getCohortMAF(resultInstanceId, segmentIds, maxbins)
+        vcfService.getCohortMAF(resultInstanceId, conceptKey, segmentIds, maxbins)
     }
 
     @Override

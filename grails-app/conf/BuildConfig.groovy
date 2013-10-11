@@ -23,7 +23,7 @@ grails.project.dependency.resolution = {
             excludes 'lucene-core'
         }
         compile 'net.sf.opencsv:opencsv:2.3'
-        compile 'org.transmartproject:transmart-core-api:1.0-SNAPSHOT'
+        compile 'org.transmartproject:transmart-core-api:1.0-gwas-SNAPSHOT'
     }
 
     plugins {

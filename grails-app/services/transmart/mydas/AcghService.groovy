@@ -22,12 +22,11 @@ import uk.ac.ebi.mydas.model.DasFeatureOrientation
 import uk.ac.ebi.mydas.model.DasPhase
 import uk.ac.ebi.mydas.model.DasType
 
-class AcghService {
+class AcghService extends AbstractTransmartDasService {
 
     static transactional = true
 
     DataQueryResource dataQueryResourceNoGormService
-    QueriesResource queriesResourceService
 
     String acghVersion = '1.0'
     String acghEntryPointVersion = '1.0'
@@ -48,13 +47,14 @@ class AcghService {
     private def acghDasMethod = new DasMethodE('acgh', 'acgh', 'acgh-cv-id')
 
     List<DasAnnotatedSegment> getAcghFeatures(Long resultInstanceId,
+                                              String conceptKey,
                                               Collection<String> segmentIds = [],
                                               Integer maxbins = null,
                                               uk.ac.ebi.mydas.model.Range range = null,
                                               Collection<DasType> dasTypes = acghDasTypes) throws UnimplementedFeatureException, DataSourceException {
 
         // define query
-        def query = getACGHRegionQuery(resultInstanceId, segmentIds, range)
+        def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
 
         // getting from the database
         RegionResult regionResult = dataQueryResourceNoGormService.runACGHRegionQuery(query, null)
@@ -134,7 +134,7 @@ class AcghService {
     List<DasEntryPoint> getAcghEntryPoints(Long resultInstanceId) {
 
         // define query
-        def query = getACGHRegionQuery(resultInstanceId)
+        def query = createHighDimensionalQuery(resultInstanceId)
 
         // get chromosomal regions from defined result instance id
         List<ChromosomalSegment> regions = dataQueryResourceNoGormService.getChromosomalSegments(query)
@@ -191,24 +191,6 @@ class AcghService {
             //TODO Reduce to maxbins
             segments
         } else segments
-    }
-
-    private ACGHRegionQuery getACGHRegionQuery(Long resultInstanceId, Collection<String> segmentIds = [], uk.ac.ebi.mydas.model.Range range = null) {
-        def segments = segmentIds.collect {
-            def chromosomeSegment = new ChromosomalSegment(chromosome: it)
-            if(range) {
-                chromosomeSegment.start = range.from
-                chromosomeSegment.end = range.to
-            }
-            chromosomeSegment
-        }
-
-        new ACGHRegionQuery(
-                common: new CommonHighDimensionalQueryConstraints(
-                        patientQueryResult: queriesResourceService.getQueryResultFromId(resultInstanceId)
-                ),
-                segments: segments
-        )
     }
 
 }
