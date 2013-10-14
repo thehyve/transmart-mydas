@@ -29,7 +29,13 @@ class CohortMAFDS implements RangeHandlingAnnotationDataSource {
     @Override
     void init(ServletContext servletContext, Map<String, PropertyType> stringPropertyTypeMap, DataSourceConfiguration dataSourceConfiguration) throws DataSourceException {
         resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong()
-        conceptKey = dataSourceConfiguration.getMatcherAgainstDsn().group(2);
+        def ckEncoded = dataSourceConfiguration.getMatcherAgainstDsn().group(2)
+        if (ckEncoded) {
+            //TODO Double encoding/decoding because we have problem with single
+            // encoded concept key (400 Bad Request) in earlier stages (possibly mydas)
+            ckEncoded = URLDecoder.decode(ckEncoded, 'UTF-8')
+            conceptKey = URLDecoder.decode(ckEncoded, 'UTF-8')
+        }
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         this.vcfService = ctx.vcfService
     }

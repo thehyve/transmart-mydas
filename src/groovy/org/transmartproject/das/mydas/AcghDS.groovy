@@ -9,7 +9,10 @@ import uk.ac.ebi.mydas.exceptions.BadReferenceObjectException
 import uk.ac.ebi.mydas.exceptions.CoordinateErrorException
 import uk.ac.ebi.mydas.exceptions.DataSourceException
 import uk.ac.ebi.mydas.exceptions.UnimplementedFeatureException
-import uk.ac.ebi.mydas.model.*
+import uk.ac.ebi.mydas.model.DasAnnotatedSegment
+import uk.ac.ebi.mydas.model.DasEntryPoint
+import uk.ac.ebi.mydas.model.DasType
+import uk.ac.ebi.mydas.model.Range
 
 import javax.servlet.ServletContext
 
@@ -32,7 +35,13 @@ class AcghDS implements RangeHandlingAnnotationDataSource {
     void init(ServletContext servletContext, Map<String, PropertyType> stringPropertyTypeMap, DataSourceConfiguration dataSourceConfiguration) throws DataSourceException {
         // getting result instant id
         resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong()
-        conceptKey = dataSourceConfiguration.getMatcherAgainstDsn().group(2)
+        def ckEncoded = dataSourceConfiguration.getMatcherAgainstDsn().group(2)
+        if (ckEncoded) {
+            //TODO Double encoding/decoding because we have problem with single
+            // encoded concept key (400 Bad Request) in earlier stages (possibly mydas)
+            ckEncoded = URLDecoder.decode(ckEncoded, 'UTF-8')
+            conceptKey = URLDecoder.decode(ckEncoded, 'UTF-8')
+        }
         // get servlet context
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         // get service
@@ -64,7 +73,7 @@ class AcghDS implements RangeHandlingAnnotationDataSource {
 
     @Override
     DasAnnotatedSegment getFeatures(String segmentId, int start, int stop, Integer maxbins) throws BadReferenceObjectException, CoordinateErrorException, DataSourceException {
-       acghService.getAcghFeatures(resultInstanceId, conceptKey, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
+        acghService.getAcghFeatures(resultInstanceId, conceptKey, [segmentId], maxbins, new uk.ac.ebi.mydas.model.Range(start, stop)).first()
     }
 
     @Override
@@ -101,7 +110,7 @@ class AcghDS implements RangeHandlingAnnotationDataSource {
     }
 
     List<DasEntryPoint> getEntryPoints() {
-        if(entryPoints == null) {
+        if (entryPoints == null) {
             entryPoints = acghService.getAcghEntryPoints(resultInstanceId)
         }
         entryPoints

@@ -30,7 +30,11 @@ class SummaryMAFDS implements RangeHandlingAnnotationDataSource {
         def ctx = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         this.vcfService = ctx.vcfService
         resultInstanceId = dataSourceConfiguration.getMatcherAgainstDsn().group(1).toLong()
-        conceptKey = dataSourceConfiguration.getMatcherAgainstDsn().group(2)
+        def ckEncoded = dataSourceConfiguration.getMatcherAgainstDsn().group(2)
+        if(ckEncoded) {
+            ckEncoded = URLDecoder.decode(ckEncoded, 'UTF-8')
+            conceptKey = URLDecoder.decode(ckEncoded, 'UTF-8')
+        }
     }
 
     @Override
