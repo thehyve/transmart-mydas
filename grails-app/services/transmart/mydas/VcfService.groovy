@@ -78,7 +78,7 @@ class VcfService extends AbstractTransmartDasService {
         def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
         def deVariantSubjectDetails =  dataQueryResourceNoGormService.getSummaryMaf(query)
         def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails) { VcfValues val ->
-            [id: val.rsId , type: val.genomicVariantType, name: 'Qenomic Variant Type', score: val.maf]
+            [id: val.rsId , type: val.genomicVariantType, name: 'Genomic Variant Type', score: val.maf]
         }
         segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
     }
