@@ -35,9 +35,7 @@ class VcfService extends AbstractTransmartDasService {
 
         def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
         def deVariantSubjectDetails =  dataQueryResourceNoGormService.getCohortMaf(query)
-        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails) { VcfValues val ->
-            [id: val.rsId , type: 'maf', name: 'Cohort Minor Allele Frequency', score: val.maf]
-        }
+        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails, getCohortMafFeature)
         segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
     }
 
@@ -53,9 +51,7 @@ class VcfService extends AbstractTransmartDasService {
                                             Range range = null) {
         def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
         def deVariantSubjectDetails =  dataQueryResourceNoGormService.getSummaryMaf(query)
-        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails) { VcfValues val ->
-            [id: val.rsId , type: 'smaf', name: 'Minor Allele Frequency', score: val.maf]
-        }
+        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails, getSummaryMafFeature)
         segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
     }
 
@@ -64,9 +60,7 @@ class VcfService extends AbstractTransmartDasService {
                                             Range range = null) {
         def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
         def deVariantSubjectDetails =  dataQueryResourceNoGormService.getSummaryMaf(query)
-        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails) { VcfValues val ->
-            [id: val.rsId , type: 'qd', name: 'Quality of Depth', score: val.qualityOfDepth]
-        }
+        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails, getQDFeature)
         segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
     }
 
@@ -77,69 +71,199 @@ class VcfService extends AbstractTransmartDasService {
 
         def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
         def deVariantSubjectDetails =  dataQueryResourceNoGormService.getSummaryMaf(query)
-        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails) { VcfValues val ->
-            [id: val.rsId , type: val.genomicVariantType, name: 'Qenomic Variant Type', score: val.maf]
-        }
+        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails, getGenomicTypeFeature)
         segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
     }
 
-    private def constructSegmentFeaturesMap(List<VcfValues> deVariantSubjectDetails, Closure dataFetchClosure) {
+    private def constructSegmentFeaturesMap(List<VcfValues> deVariantSubjectDetails, Closure featureCreationClosure) {
         Map<String, List<DasFeature>> featuresPerSegment = [:]
 
         deVariantSubjectDetails.each {
             if (!featuresPerSegment[it.chromosome]) {
                 featuresPerSegment[it.chromosome] = []
             }
-            def data = dataFetchClosure(it)
-            if(data.score > 0)
-                featuresPerSegment[it.chromosome] << new DasFeature(
-                        //FIXME This field could not be reused
-                        // feature id - any unique id that represent this feature
-                        "${data.type}-${data.id}",
-                        // feature label
-                        //FIXME This field could not be reused
-                        data.name,
-                        //FIXME This field could not be reused
-                        // das type
-                        new DasType("${data.type}", "", "", ""),
-                        // das method TODO: pls find out what is actually means
-                        vcfMethod,
-                        // start pos
-                        it.position.toInteger(),
-                        // end pos
-                        it.position.toInteger(),
-                        // value - this is where Minor Allele Freq (MAF) value is placed
-                        data.score,
-                        // feature orientation  TODO: pls find out what is actually means
-                        // lets put  DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE by default
-                        DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
-                        // phase TODO: pls find out what is actually means
-                        // lets put DasPhase.PHASE_NOT_APPLICABLE by default
-                        DasPhase.PHASE_NOT_APPLICABLE,
-                        //notes
-                        ["RefSNP=${it.rsId}",
-                                "REF=${it.ref}",
-                                "ALT=${it.alt}",
-                                //TODO What names in vcf file
-                                //"AlleleCount=",
-                                "AlleleFrequency=${it.additionalInfo['AF'] ?: ''}",
-                                //TODO What names in vcf file
-                                //"TotalAllele=438",
-                                //"BaseQRankSum=-9.563",
-                                //"MQRankSum=2.462",
-                                "dbSNPMembership=${it.additionalInfo['DB'] ?: 'No'}"]*.toString(),
-                        //links
-                        [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${it.rsId}")): 'NCBI SNP Ref'],
-                        //targets
-                        [],
-                        //parents
-                        [],
-                        //parts
-                        []
-                )
+
+            featuresPerSegment[it.chromosome].addAll(featureCreationClosure(it))
         }
 
         featuresPerSegment
+    }
+
+    private def getCohortMafFeature = { VcfValues val ->
+        if (!val.maf || val.maf <= 0) {
+            return []
+        }
+
+        def linkMap = val.rsId == '.' ? [:]
+        : [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${val.rsId}")): 'NCBI SNP Ref']
+
+        [new DasFeature(
+                // feature id - any unique id that represent this feature
+                "maf-${val.rsId}",
+                // feature label
+                'Cohort Minor Allele Frequency',
+                // das type
+                new DasType('maf', "", "", ""),
+                // das method TODO: pls find out what is actually means
+                vcfMethod,
+                // start pos
+                val.position.toInteger(),
+                // end pos
+                val.position.toInteger(),
+                // value - this is where Minor Allele Freq (MAF) value is placed
+                val.maf,
+                DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
+                DasPhase.PHASE_NOT_APPLICABLE,
+                //notes
+                ["RefSNP=${val.rsId}",
+                        "REF=${val.referenceAllele}",
+                        "ALT=${val.mafAllele}",
+                        "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
+                        "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
+                        "TotalAllele=${val.additionalInfo['AN'] ?: ''}"]*.toString(),
+                //links
+                linkMap,
+                //targets
+                [],
+                //parents
+                [],
+                //parts
+                []
+        )]
+    }
+
+    private def getSummaryMafFeature = { VcfValues val ->
+        if (!val.maf || val.maf <= 0) {
+            return []
+        }
+
+        def linkMap = val.rsId == '.' ? [:]
+        : [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${val.rsId}")): 'NCBI SNP Ref']
+
+        [new DasFeature(
+                // feature id - any unique id that represent this feature
+                "smaf-${val.rsId}",
+                // feature label
+                'Minor Allele Frequency',
+                // das type
+                new DasType('smaf', "", "", ""),
+                // das method TODO: pls find out what is actually means
+                vcfMethod,
+                // start pos
+                val.position.toInteger(),
+                // end pos
+                val.position.toInteger(),
+                // value - this is where Minor Allele Freq (MAF) value is placed
+                val.maf,
+                DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
+                DasPhase.PHASE_NOT_APPLICABLE,
+                //notes
+                ["RefSNP=${val.rsId}",
+                        "REF=${val.referenceAllele}",
+                        "ALT=${val.alternativeAlleles.join(',')}",
+                        "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
+                        "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
+                        "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
+                        "BaseQRankSum=${val.additionalInfo['BaseQRankSum'] ?: ''}",
+                        "MQRankSum=${val.additionalInfo['MQRankSum'] ?: ''}",
+                        "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}"]*.toString(),
+                //links
+                linkMap,
+                //targets
+                [],
+                //parents
+                [],
+                //parts
+                []
+        )]
+    }
+
+    private def getQDFeature = { VcfValues val ->
+
+        def linkMap = val.rsId == '.' ? [:]
+        : [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${val.rsId}")): 'NCBI SNP Ref']
+
+        [new DasFeature(
+                // feature id - any unique id that represent this feature
+                "qd-${val.rsId}",
+                // feature label
+                'Quality of Depth',
+                // das type
+                new DasType('qd', "", "", ""),
+                // das method TODO: pls find out what is actually means
+                vcfMethod,
+                // start pos
+                val.position.toInteger(),
+                // end pos
+                val.position.toInteger(),
+                // value - this is where Minor Allele Freq (MAF) value is placed
+                val.maf,
+                DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
+                DasPhase.PHASE_NOT_APPLICABLE,
+                //notes
+                ["RefSNP=${val.rsId}",
+                        "REF=${val.referenceAllele}",
+                        "ALT=${val.alternativeAlleles.join(',')}",
+                        "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
+                        "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
+                        "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
+                        "BaseQRankSum=${val.additionalInfo['BaseQRankSum'] ?: ''}",
+                        "MQRankSum=${val.additionalInfo['MQRankSum'] ?: ''}",
+                        "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}"]*.toString(),
+                //links
+                linkMap,
+                //targets
+                [],
+                //parents
+                [],
+                //parts
+                []
+        )]
+    }
+
+    private def getGenomicTypeFeature = { VcfValues val ->
+
+        def linkMap = val.rsId == '.' ? [:]
+        : [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${val.rsId}")): 'NCBI SNP Ref']
+
+        def results = []
+        val.genomicVariantTypes.eachWithIndex { genomicVariantType, indx ->
+            results << new DasFeature(
+                    // feature id - any unique id that represent this feature
+                    "gv-${val.rsId}-$genomicVariantType",
+                    // feature label
+                    'Qenomic Variant Type',
+                    // das type
+                    new DasType(genomicVariantType.toString(), "", "", ""),
+                    // das method TODO: pls find out what is actually means
+                    vcfMethod,
+                    // start pos
+                    val.position.toInteger(),
+                    // end pos
+                    val.position.toInteger(),
+                    // value - this is where Minor Allele Freq (MAF) value is placed
+                    val.maf,
+                    DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
+                    DasPhase.PHASE_NOT_APPLICABLE,
+                    //notes
+                    ["RefSNP=${val.rsId}",
+                            "REF=${val.referenceAllele}",
+                            "ALT=${val.alternativeAlleles[indx]}",
+                            "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
+                            "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
+                            "TotalAllele=${val.additionalInfo['AN'] ?: ''}"]*.toString(),
+                    //links
+                    linkMap,
+                    //targets
+                    [],
+                    //parents
+                    [],
+                    //parts
+                    []
+            )
+        }
+
+        results
     }
 
 }
