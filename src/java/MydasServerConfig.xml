@@ -148,8 +148,8 @@
 
         <!-- VCF Datasource -->
         <datasource uri="vcf"
-                    title="vcf"
-                    description="vcf alt alele freq"
+                    title="Cohort MAF"
+                    description="Minor Allele Frequency (MAF) of selected cohort"
                     doc_href="http://www.transmartproject.org/"
                     mapmaster="http://www.transmartproject.org/">
 
@@ -178,8 +178,8 @@
 
         <!-- Summary Level MAF Datasource -->
         <datasource uri="http://thehyve.nl"
-                    title="Summary level MAF"
-                    description="Summary level MAF"
+                    title="Summary MAF"
+                    description="Minor Allele Frequency (MAF) whole study level"
                     doc_href="http://www.transmartproject.org/"
                     mapmaster="http://www.transmartproject.org/">
 
@@ -209,7 +209,7 @@
         <!-- Quality of Depth Datasource -->
         <datasource uri="http://thehyve.nl"
                     title=" Quality of Depth"
-                    description="Quality of Depth"
+                    description="Quality of Depth (QD) whole study level"
                     doc_href="http://www.transmartproject.org/"
                     mapmaster="http://www.transmartproject.org/">
 
@@ -239,7 +239,7 @@
         <!-- Genomic Variants Datasource -->
         <datasource uri="http://thehyve.nl"
                     title="Genomic Variants"
-                    description="Genomic Variants"
+                    description="Genomic Variants of selected cohort"
                     doc_href="http://www.transmartproject.org/"
                     mapmaster="http://www.transmartproject.org/">
 
