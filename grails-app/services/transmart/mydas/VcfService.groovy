@@ -117,10 +117,12 @@ class VcfService extends AbstractTransmartDasService {
                         //notes
                 ["RefSNP=${val.rsId}",
                         "REF=${val.referenceAllele}",
-                        "ALT=${val.mafAllele}",
+                        "ALT=${val.alternativeAlleles.join(',')}",
+                        "MafAllele=${val.mafAllele}",
                         "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
                         "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
-                        "TotalAllele=${val.additionalInfo['AN'] ?: ''}"]*.toString(),
+                        "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
+                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
                         //links
                 linkMap,
                 //targets
@@ -166,7 +168,8 @@ class VcfService extends AbstractTransmartDasService {
                         "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
                         "BaseQRankSum=${val.additionalInfo['BaseQRankSum'] ?: ''}",
                         "MQRankSum=${val.additionalInfo['MQRankSum'] ?: ''}",
-                        "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}"]*.toString(),
+                        "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}",
+                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
                 //links
                 linkMap,
                 //targets
@@ -209,7 +212,8 @@ class VcfService extends AbstractTransmartDasService {
                         "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
                         "BaseQRankSum=${val.additionalInfo['BaseQRankSum'] ?: ''}",
                         "MQRankSum=${val.additionalInfo['MQRankSum'] ?: ''}",
-                        "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}"]*.toString(),
+                        "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}",
+                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
                 //links
                 linkMap,
                 //targets
@@ -248,10 +252,12 @@ class VcfService extends AbstractTransmartDasService {
                     //notes
                     ["RefSNP=${val.rsId}",
                             "REF=${val.referenceAllele}",
-                            "ALT=${val.alternativeAlleles[indx]}",
+                            "ALT=${val.alternativeAlleles.join(',')}",
+                            "CurrentALT=${val.alternativeAlleles[indx]}",
                             "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
                             "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
-                            "TotalAllele=${val.additionalInfo['AN'] ?: ''}"]*.toString(),
+                            "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
+                            "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
                     //links
                     linkMap,
                         //targets
