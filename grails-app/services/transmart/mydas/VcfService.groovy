@@ -122,7 +122,9 @@ class VcfService extends AbstractTransmartDasService {
                         "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
                         "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
                         "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
-                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
+                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}",
+                        "QualityOfDepth=${val.qualityOfDepth ?: ''}",
+                        "GenomicVariantTypes=${val.genomicVariantTypes.join(',')}"]*.toString(),
                         //links
                 linkMap,
                 //targets
@@ -169,7 +171,9 @@ class VcfService extends AbstractTransmartDasService {
                         "BaseQRankSum=${val.additionalInfo['BaseQRankSum'] ?: ''}",
                         "MQRankSum=${val.additionalInfo['MQRankSum'] ?: ''}",
                         "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}",
-                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
+                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}",
+                        "QualityOfDepth=${val.qualityOfDepth ?: ''}",
+                        "GenomicVariantTypes=${val.genomicVariantTypes.join(',')}"]*.toString(),
                 //links
                 linkMap,
                 //targets
@@ -200,7 +204,7 @@ class VcfService extends AbstractTransmartDasService {
                 // end pos
                 val.position.toInteger(),
                 // value - this is where Minor Allele Freq (MAF) value is placed
-                val.maf,
+                val.qualityOfDepth,
                 DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
                 DasPhase.PHASE_NOT_APPLICABLE,
                 //notes
@@ -213,7 +217,9 @@ class VcfService extends AbstractTransmartDasService {
                         "BaseQRankSum=${val.additionalInfo['BaseQRankSum'] ?: ''}",
                         "MQRankSum=${val.additionalInfo['MQRankSum'] ?: ''}",
                         "dbSNPMembership=${val.additionalInfo['DB'] ?: 'No'}",
-                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
+                        "VariantClassification=${val.additionalInfo['VC'] ?: ''}",
+                        "MAF=${val.maf ? String.format('%.2f', val.maf) : ''}",
+                        "GenomicVariantTypes=${val.genomicVariantTypes.join(',')}"]*.toString(),
                 //links
                 linkMap,
                 //targets
@@ -246,7 +252,7 @@ class VcfService extends AbstractTransmartDasService {
                     // end pos
                     val.position.toInteger(),
                     // value - this is where Minor Allele Freq (MAF) value is placed
-                    val.maf,
+                    null,
                     DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
                     DasPhase.PHASE_NOT_APPLICABLE,
                     //notes
@@ -257,7 +263,9 @@ class VcfService extends AbstractTransmartDasService {
                             "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
                             "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
                             "TotalAllele=${val.additionalInfo['AN'] ?: ''}",
-                            "VariantClassification=${val.additionalInfo['VC'] ?: ''}"]*.toString(),
+                            "VariantClassification=${val.additionalInfo['VC'] ?: ''}",
+                            "MAF=${val.maf ? String.format('%.2f', val.maf) : ''}",
+                            "QualityOfDepth=${val.qualityOfDepth ?: ''}"]*.toString(),
                     //links
                     linkMap,
                         //targets
