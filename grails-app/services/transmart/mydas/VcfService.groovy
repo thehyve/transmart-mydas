@@ -266,7 +266,7 @@ class VcfService extends AbstractTransmartDasService {
                             "TotalAllele=${val.additionalInfo['AN'] ?: NA}",
                             "VariantClassification=${val.additionalInfo['VC'] ?: NA}",
                             "MAF=${val.maf ? String.format('%.2f', val.maf) : NA}",
-                            "QualityOfDepth=${val.qualityOfDepth ?: ''}"]*.toString(),
+                            "QualityOfDepth=${val.qualityOfDepth ?: NA}"]*.toString(),
                     //links
                     linkMap,
                         //targets
