@@ -70,8 +70,14 @@ class VcfService extends AbstractTransmartDasService {
                                                  Range range = null) {
 
         def query = createHighDimensionalQuery(resultInstanceId, conceptKey, segmentIds, range)
-        def deVariantSubjectDetails =  dataQueryResourceNoGormService.getCohortMaf(query)
+        def deVariantSubjectDetails =  dataQueryResourceNoGormService.getSummaryMaf(query)
+<<<<<<< HEAD
         def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails, getGenomicTypeFeature)
+=======
+        def featuresPerSegment = constructSegmentFeaturesMap(deVariantSubjectDetails) { VcfValues val ->
+            [id: val.rsId , type: val.genomicVariantType, name: 'Genomic Variant Type', score: val.maf]
+        }
+>>>>>>> c04529b86e4f83770200a524a24d4312eb10a070
         segmentIds.collect { new DasAnnotatedSegment(it, range?.getFrom(), range?.getTo(), vcfVersion, it, featuresPerSegment[it] ?: []) }
     }
 
@@ -98,30 +104,30 @@ class VcfService extends AbstractTransmartDasService {
         : [(new URL("http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=${val.rsId}")): 'NCBI SNP Ref']
 
         [new DasFeature(
-                        // feature id - any unique id that represent this feature
+                // feature id - any unique id that represent this feature
                 "maf-${val.rsId}",
-                        // feature label
+                // feature label
                 'Cohort Minor Allele Frequency',
-                        // das type
+                // das type
                 new DasType('maf', "", "", ""),
-                        // das method TODO: pls find out what is actually means
-                        vcfMethod,
-                        // start pos
+                // das method TODO: pls find out what is actually means
+                vcfMethod,
+                // start pos
                 val.position.toInteger(),
-                        // end pos
+                // end pos
                 val.position.toInteger(),
-                        // value - this is where Minor Allele Freq (MAF) value is placed
+                // value - this is where Minor Allele Freq (MAF) value is placed
                 val.maf,
-                        DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
-                        DasPhase.PHASE_NOT_APPLICABLE,
-                        //notes
+                DasFeatureOrientation.ORIENTATION_NOT_APPLICABLE,
+                DasPhase.PHASE_NOT_APPLICABLE,
+                //notes
                 ["RefSNP=${val.rsId}",
                         "REF=${val.referenceAllele}",
                         "ALT=${val.mafAllele}",
                         "AlleleCount=${val.additionalInfo['AC'] ?: ''}",
                         "AlleleFrequency=${val.additionalInfo['AF'] ?: ''}",
                         "TotalAllele=${val.additionalInfo['AN'] ?: ''}"]*.toString(),
-                        //links
+                //links
                 linkMap,
                 //targets
                 [],
@@ -232,7 +238,7 @@ class VcfService extends AbstractTransmartDasService {
                     // feature id - any unique id that represent this feature
                     "gv-${val.rsId}-$genomicVariantType",
                     // feature label
-                    'Genomic Variant Type',
+                    'Qenomic Variant Type',
                     // das type
                     new DasType(genomicVariantType.toString(), "", "", ""),
                     // das method TODO: pls find out what is actually means
@@ -254,13 +260,13 @@ class VcfService extends AbstractTransmartDasService {
                             "TotalAllele=${val.additionalInfo['AN'] ?: ''}"]*.toString(),
                     //links
                     linkMap,
-                        //targets
-                        [],
-                        //parents
-                        [],
-                        //parts
-                        []
-                )
+                    //targets
+                    [],
+                    //parents
+                    [],
+                    //parts
+                    []
+            )
         }
 
         results
